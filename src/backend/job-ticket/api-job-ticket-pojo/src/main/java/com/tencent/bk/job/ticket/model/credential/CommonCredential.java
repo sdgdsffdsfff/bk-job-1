@@ -22,43 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-package com.tencent.bk.job.gateway.filter.esb;
+package com.tencent.bk.job.ticket.model.credential;
 
-import brave.Tracer;
-import com.tencent.bk.job.common.util.RequestUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-/**
- * ESB request-id 设置
- */
-@Slf4j
-@Component
-public class AddEsbRequestIdHeaderGatewayFilterFactory
-    extends AbstractGatewayFilterFactory<AddEsbRequestIdHeaderGatewayFilterFactory.Config> {
-    private final Tracer tracer;
-
-    @Autowired
-    public AddEsbRequestIdHeaderGatewayFilterFactory(Tracer tracer) {
-        super(Config.class);
-        this.tracer = tracer;
-    }
-
-    @Override
-    public GatewayFilter apply(Config config) {
-        return (exchange, chain) -> {
-            ServerHttpRequest request = exchange.getRequest();
-            String requestId = RequestUtil.getHeaderValue(request, "X-Bkapi-Request-Id");
-            return chain.filter(exchange.mutate().request(request).build());
-        };
-    }
-
-    static class Config {
-
-    }
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@EqualsAndHashCode
+public class CommonCredential {
+    String accessKey;
+    String secretKey;
+    String username;
+    String password;
+    /**
+     * 类型
+     */
+    private String type;
 }

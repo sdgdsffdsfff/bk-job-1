@@ -22,34 +22,40 @@
  * IN THE SOFTWARE.
  */
 
-package com.tencent.bk.job.common.web.filter;
+package com.tencent.bk.job.analysis.config;
 
-import com.tencent.bk.job.common.web.model.RepeatableReadHttpServletRequest;
-import com.tencent.bk.job.common.web.model.RepeatableReadHttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+@Data
+@Component
+public class StatisticConfig {
 
-@Slf4j
-public class RepeatableReadServletRequestResponseFilter implements Filter {
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    @Value("${job.analysis.statistics.expire.enable:true}")
+    private Boolean enableExpire;
 
-    }
+    @Value("${job.analysis.statistics.expire.days:366}")
+    private Integer expireDays;
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-        ServletException {
-        ServletRequest requestWrapper = new RepeatableReadHttpServletRequest((HttpServletRequest) request);
-        ServletResponse responseWrapper = new RepeatableReadHttpServletResponse((HttpServletResponse) response);
-        chain.doFilter(requestWrapper, responseWrapper);
-    }
+    @Value("${job.analysis.statistics.frequency.hours:1}")
+    private Integer intervalHours;
 
-    @Override
-    public void destroy() {
+    @Value("${job.analysis.statistics.enable:true}")
+    private Boolean enable;
 
-    }
+    @Value("${job.analysis.statistics.mom.days:1}")
+    private Integer momDays;
+
+    @Value("${job.analysis.statistics.yoy.days:7}")
+    private Integer yoyDays;
+
+    @Value("${job.analysis.statistics.tag.num.max:120}")
+    private Integer maxTagNum;
+
+    /**
+     * 过去多少天执行过任务的业务视为活跃
+     */
+    @Value("${job.analysis.app.active.days:3}")
+    private Integer appActiveDays;
 }

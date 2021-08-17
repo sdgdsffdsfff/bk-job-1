@@ -22,24 +22,25 @@
  * IN THE SOFTWARE.
  */
 
-package com.tencent.bk.job.ticket.model.credential;
+package com.tencent.bk.job.manage.model.inner;
 
-import lombok.AllArgsConstructor;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-@AllArgsConstructor
+/**
+ * 业务
+ */
 @Data
-@EqualsAndHashCode
-public class CommonCredentialDTO {
-    String accessKey;
-    String secretKey;
-    String username;
-    String password;
+@ApiModel("业务")
+public class ServiceAppBaseInfoDTO {
+
+    @ApiModelProperty("业务ID")
+    private Long id;
+
     /**
-     * 类型
+     * 业务名称
      */
-    private String type;
+    @ApiModelProperty("业务名称")
+    private String name;
 }

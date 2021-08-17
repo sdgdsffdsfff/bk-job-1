@@ -24,6 +24,7 @@
 
 package com.tencent.bk.job.gateway.filter.esb;
 
+import com.tencent.bk.job.common.constant.JobCommonHeaders;
 import com.tencent.bk.job.common.util.RequestUtil;
 import com.tencent.bk.job.gateway.model.esb.EsbJwtInfo;
 import com.tencent.bk.job.gateway.service.EsbJwtService;
@@ -38,7 +39,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 
 /**
- * ESB JWT 校验，用于确认ESB-API调用方式来自于ESB
+ * ESB JWT 解析与校验，用于确认ESB-API调用方式来自于ESB
  */
 @Slf4j
 @Component
@@ -57,7 +58,7 @@ public class CheckEsbJwtGatewayFilterFactory
         return (exchange, chain) -> {
             ServerHttpResponse response = exchange.getResponse();
             ServerHttpRequest request = exchange.getRequest();
-            String token = RequestUtil.getHeaderValue(request, "X-Bkapi-JWT");
+            String token = RequestUtil.getHeaderValue(request, JobCommonHeaders.BK_GATEWAY_JWT);
             if (StringUtils.isEmpty(token)) {
                 log.warn("Esb token is empty!");
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -66,10 +67,14 @@ public class CheckEsbJwtGatewayFilterFactory
             EsbJwtInfo authInfo = esbJwtService.extractFromJwt(token);
             if (authInfo == null) {
                 log.warn("Untrusted esb request, request-id:{}", RequestUtil.getHeaderValue(request,
-                    "X-Bkapi-Request-Id"));
+                    JobCommonHeaders.BK_GATEWAY_REQUEST_ID));
                 response.setStatusCode(HttpStatus.UNAUTHORIZED);
                 return response.setComplete();
             }
+
+            // set app code header
+            request.mutate().header(JobCommonHeaders.APP_CODE, new String[]{authInfo.getAppCode()}).build();
+            request.mutate().header(JobCommonHeaders.USERNAME, new String[]{authInfo.getUsername()}).build();
             return chain.filter(exchange.mutate().request(request).build());
         };
     }

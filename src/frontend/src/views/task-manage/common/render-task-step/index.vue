@@ -196,7 +196,7 @@
                 operationData: {},
                 detailInfo: {},
                 dragStartIndex: -1,
-                mediaQueryMap: [900, 1000, 1100, 1200],
+                mediaQueryMap: [1000, 1100, 1200, 1300],
             };
         },
         computed: {
@@ -304,13 +304,9 @@
                         }
                     }
                     this.steps = Object.freeze([...list]);
-                    // this.parseUrl();
                 },
                 immediate: true,
             },
-        },
-        created () {
-            this.innerChange = false;
         },
         methods: {
             /**
@@ -319,24 +315,6 @@
             clickStepByIndex (index) {
                 this.handleStepClick(index);
             },
-            /**
-             * @desc 如果url指定了步骤id，默认显示对应步骤的弹层
-             */
-            // parseUrl () {
-            //     if (this.innerChange) {
-            //         return;
-            //     }
-            //     const stepId = Number(this.$route.params.stepId);
-            //     if (!stepId) {
-            //         return;
-            //     }
-            //     const currntStepIndex = _.findIndex(this.steps, item => item.id === stepId);
-            //     if (currntStepIndex > -1) {
-            //         setTimeout(() => {
-            //             this.handleShowEdit(currntStepIndex);
-            //         }, 500);
-            //     }
-            // },
             /**
              * @desc 鼠标点击某个步骤
              * @param {Object} payload 点击的模版步骤数据
@@ -428,8 +406,12 @@
 
                         const currentStep = steps[index];
                         if (currentStep.id) {
+                            // 删除已存在的步骤
+                            //  —设置delete
                             currentStep.delete = 1;
                         } else {
+                            // 删除新建的步骤
+                            //  —直接删除
                             steps.splice(index, 1);
                         }
 
@@ -444,7 +426,6 @@
              * @param {Boolean} localValidator 表单验证结果
              */
             handleTaskStepSubmit (payload, localValidator) {
-                this.innerChange = true;
                 const operationStep = new TaskStepModel(payload);
                 const steps = [...this.steps];
 

@@ -22,40 +22,66 @@
  * IN THE SOFTWARE.
  */
 
-package com.tencent.bk.job.analysis.config.listener;
+package com.tencent.bk.job.manage.model.esb.v3.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tencent.bk.job.common.esb.model.EsbReq;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import lombok.EqualsAndHashCode;
 
+/**
+ * 新建凭据请求
+ */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Component
-public class StatisticConfig {
-
-    @Value("${job.analysis.statistics.expire.enable:true}")
-    private Boolean enableExpire;
-
-    @Value("${job.analysis.statistics.expire.days:366}")
-    private Integer expireDays;
-
-    @Value("${job.analysis.statistics.frequency.hours:1}")
-    private Integer intervalHours;
-
-    @Value("${job.analysis.statistics.enable:true}")
-    private Boolean enable;
-
-    @Value("${job.analysis.statistics.mom.days:1}")
-    private Integer momDays;
-
-    @Value("${job.analysis.statistics.yoy.days:7}")
-    private Integer yoyDays;
-
-    @Value("${job.analysis.statistics.tag.num.max:100}")
-    private Integer maxTagNum;
+public class EsbCreateOrUpdateCredentialV3Req extends EsbReq {
+    /**
+     * 业务ID
+     */
+    @JsonProperty("bk_biz_id")
+    private Long appId;
 
     /**
-     * 过去多少天执行过任务的业务视为活跃
+     * 凭据ID
      */
-    @Value("${job.analysis.app.active.days:3}")
-    private Integer appActiveDays;
+    private String id;
+
+    /**
+     * 凭据名称
+     */
+    private String name;
+
+    /**
+     * 凭据类型
+     */
+    private String type;
+
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * AccessKey
+     */
+    @JsonProperty("credential_access_key")
+    private String credentialAccessKey;
+
+    /**
+     * SecretKey
+     */
+    @JsonProperty("credential_secret_key")
+    private String credentialSecretKey;
+
+    /**
+     * Username
+     */
+    @JsonProperty("credential_username")
+    private String credentialUsername;
+
+    /**
+     * Password
+     */
+    @JsonProperty("credential_password")
+    private String credentialPassword;
 }

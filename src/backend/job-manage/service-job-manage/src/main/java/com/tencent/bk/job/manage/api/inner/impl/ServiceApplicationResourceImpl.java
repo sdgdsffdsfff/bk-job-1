@@ -31,6 +31,7 @@ import com.tencent.bk.job.common.model.dto.DynamicGroupInfoDTO;
 import com.tencent.bk.job.common.model.vo.HostInfoVO;
 import com.tencent.bk.job.manage.api.inner.ServiceApplicationResource;
 import com.tencent.bk.job.manage.dao.ApplicationInfoDAO;
+import com.tencent.bk.job.manage.model.inner.ServiceAppBaseInfoDTO;
 import com.tencent.bk.job.manage.model.inner.ServiceApplicationDTO;
 import com.tencent.bk.job.manage.model.inner.ServiceHostStatusDTO;
 import com.tencent.bk.job.manage.model.inner.request.ServiceGetHostStatusByDynamicGroupReq;
@@ -61,6 +62,14 @@ public class ServiceApplicationResourceImpl implements ServiceApplicationResourc
     }
 
     @Override
+    public ServiceResponse<List<ServiceAppBaseInfoDTO>> listNormalApps() {
+        List<ApplicationInfoDTO> applicationInfoDTOList = applicationInfoDAO.listAppInfoByType(AppTypeEnum.NORMAL);
+        List<ServiceAppBaseInfoDTO> resultList =
+            applicationInfoDTOList.parallelStream().map(this::convertToServiceAppBaseInfo).collect(Collectors.toList());
+        return ServiceResponse.buildSuccessResp(resultList);
+    }
+
+    @Override
     public ServiceApplicationDTO queryAppById(Long appId) {
         ApplicationInfoDTO appInfo = applicationService.getAppInfoById(appId);
         if (appInfo == null) {
@@ -83,6 +92,12 @@ public class ServiceApplicationResourceImpl implements ServiceApplicationResourc
         return app;
     }
 
+    private ServiceAppBaseInfoDTO convertToServiceAppBaseInfo(ApplicationInfoDTO appInfo) {
+        ServiceAppBaseInfoDTO appBaseInfoDTO = new ServiceAppBaseInfoDTO();
+        appBaseInfoDTO.setId(appInfo.getId());
+        appBaseInfoDTO.setName(appInfo.getName());
+        return appBaseInfoDTO;
+    }
 
     @Override
     public ServiceResponse<Boolean> checkAppPermission(Long appId, String username) {
@@ -164,7 +179,7 @@ public class ServiceApplicationResourceImpl implements ServiceApplicationResourc
     public ServiceResponse<List<ServiceHostStatusDTO>> getHostStatusByIp(Long appId, String username,
                                                                          ServiceGetHostStatusByIpReq req) {
         List<String> ipList = req.getIpList();
-        List<HostInfoVO> hostInfoVOList = applicationService.getHostsByIp(username, appId, ipList);
+        List<HostInfoVO> hostInfoVOList = applicationService.getHostsByIp(username, appId, null, ipList);
         List<ServiceHostStatusDTO> hostStatusDTOList = new ArrayList<>();
         hostInfoVOList.forEach(hostInfoVO -> {
             ServiceHostStatusDTO serviceHostStatusDTO = new ServiceHostStatusDTO();
